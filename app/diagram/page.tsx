@@ -10,15 +10,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export default function DiagramPage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Simulate loading
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
-  
-  const { toast } = useToast();
-
   const handleShare = async () => {
     try {
       const shareData = {
@@ -31,6 +30,10 @@ export default function DiagramPage() {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
         toast({
           title: "Link copied!",
           description: "Diagram Studio link has been copied to your clipboard",
@@ -76,12 +79,14 @@ export default function DiagramPage() {
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect mb-4 sm:mb-6 shimmer hover:scale-105 transition-transform cursor-pointer active:scale-95"
                   >
                     <Workflow className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm font-medium">Diagram Studio</span>
+                    <span className={`text-sm font-medium ${copied ? "text-green-600" : ""}`}>
+                      {copied ? "Link Copied ✓" : "Diagram Studio"}
+                    </span>
                     <Share2 className="h-4 w-4 text-blue-500" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Share Diagram Studio</p>
+                  <p>{copied ? "Link Copied!" : "Share Diagram Studio"}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
