@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createRoute } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { sendWelcomeEmail } from "@/lib/email";
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
   const referralCode = requestUrl.searchParams.get("ref");
 
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createRoute();
     
     try {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
